@@ -83,7 +83,50 @@ namespace AdonetCustomer
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            sqlConnection.Open();
+            SqlCommand cmd = new SqlCommand("Delete from TblCustomer where CustomerId=@customerId", sqlConnection);
+            cmd.Parameters.AddWithValue("@customerId", txtCustomerId.Text);
+            cmd.ExecuteNonQuery();
+            sqlConnection.Close();
+            MessageBox.Show("Kullanıcı silindi.", "Uyarı!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            sqlConnection.Open();
+            SqlCommand cmd = new SqlCommand("Update TblCustomer Set CustomerName=@customerName," +
+                "CustomerSurname=@customerSurname,CustomerCity=@customerCity,CustomerBalance=@customerBalance," +
+                "CustomerStatus=@customerStatus where CustomerId=@customerId", sqlConnection);
+            cmd.Parameters.AddWithValue("@customerName", txtCustomerName.Text);
+            cmd.Parameters.AddWithValue("@customerSurname", txtCustomerSurname.Text);
+            cmd.Parameters.AddWithValue("@customerCity", cmbCity.SelectedValue);
+            cmd.Parameters.AddWithValue("@customerBalance", txtBalance.Text);
+            cmd.Parameters.AddWithValue("@customerId", txtCustomerId.Text);
+            if (rdbActive.Checked)
+            {
+                cmd.Parameters.AddWithValue("@customerStatus", true);
+            }
+            if (rdbPassive.Checked)
+            {
+                cmd.Parameters.AddWithValue("@customerStatus", false);
+            }
+            cmd.ExecuteNonQuery();
+            sqlConnection.Close();
+            MessageBox.Show("Müşteri Başarıyla Güncellendi.");
+
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            sqlConnection.Open();
+            SqlCommand cmd = new SqlCommand("Select CustomerId,CustomerName,CustomerSurname,CustomerBalance,CustomerStatus,CityName From TblCustomer Inner Join TblCity On TblCity.CityId=TblCustomer.CustomerCity Where CustomerName=@CustomerName", sqlConnection);
+            cmd.Parameters.AddWithValue("@customerName", txtCustomerName.Text);
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+            dataGridView1.DataSource = dt;
+            sqlConnection.Close();
         }
     }
 }
